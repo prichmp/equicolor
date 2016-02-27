@@ -170,11 +170,11 @@ describe('equicolor', function() {
         
         it('Should find colors maximally diffrent.', function() {
             
-            var colors = equicolor.findNextColors(["#ffffff","#000000"], 1);
+            var colors = equicolor.findNextColors(["#ffffff","#000000"], 20);
             
             console.log(colors);
             
-            expect(colors).to.have.length(1);
+            expect(colors).to.have.length(20);
             
             
         });

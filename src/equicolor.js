@@ -27,11 +27,6 @@ var equicolor = {
             result.g = this.g + rgb.g;
             result.b = this.b + rgb.b;
             
-            if(isNaN(result.r))
-            {
-                console.log('this.r: '+this.r+' rgb.r: '+rgb.r);
-            }
-            
             return result;
         },
 
@@ -95,16 +90,7 @@ var equicolor = {
         findDistance: function(point)
         {
             var distance = Math.sqrt(Math.pow(this.l-point.l,2) + Math.pow(this.a-point.a,2) + Math.pow(this.b-point.b,2));
-
-            if(isNaN(distance))
-            {
-                console.error('This: '+this.l+", "+this.a+", "+this.b+" Point: "+point.l+", "+point.a+", "+point.b+" ");
-                return 0;
-            }
-            
             return distance;
-            
-            
         }
         
         
@@ -246,21 +232,7 @@ var equicolor = {
     
     rgbToLab: function(rgb)
     {
-         var lab = equicolor.xyzToLab(equicolor.rgbToXyz(rgb))
-         
-//         if(isNaN(lab.l))
-//         {
-//             console.error('rgbToLab:');
-//             console.error('rgb:');
-//             console.error(rgb.r);
-//             console.error(rgb.g);
-//             console.error(rgb.b);
-//             console.error('lab:');
-//             console.error(lab.l);
-//             console.error(lab.a);
-//             console.error(lab.b);
-//         }
-        
+        var lab = equicolor.xyzToLab(equicolor.rgbToXyz(rgb))
         return lab;
     },
     
@@ -351,6 +323,7 @@ var equicolor = {
             var distance = 0;
             for(var i=0; i<labPoints.length; i++)
             {
+                //I'm squaring the distance to make the gradients larger when near a point.
                 distance = distance + currentPoint.findDistance(labPoints[i]);
             }
             
@@ -363,7 +336,7 @@ var equicolor = {
         {
             var newColor = equicolor.gradientDecent(labPoints, costFunct);
             newColors.push(newColor);
-            points.push(equicolor.rgbToLab(newColor));
+            labPoints.push(equicolor.rgbToLab(newColor));
         }
         
         var result = newColors.map(equicolor.rgbToHex);
@@ -388,20 +361,7 @@ var equicolor = {
         initialRbg.b = Math.round(Math.random()*255); 
         
         var currentLoc = initialRbg;
-        
-        if(typeof currentLoc == 'undefined')
-        {
-            console.error("CurrentLoc is undefined.");
-            
-        }
-        else
-        {
-            console.error("CurrentLoc:");
-            console.error(currentLoc.r);
-            console.error(currentLoc.g);
-            console.error(currentLoc.b);
-        }
-        
+
         //This function just checks to see if we have gone beyond 255 and out of bounds.
         var border = function(number)
         {
@@ -458,71 +418,7 @@ var equicolor = {
             var gradR = -1*gradient(currentError,disturbedError,currentLoc.r,disturbedLoc.r);
             var gradG = -1*gradient(currentError,disturbedError,currentLoc.g,disturbedLoc.g);
             var gradB = -1*gradient(currentError,disturbedError,currentLoc.b,disturbedLoc.b);
-            
-            if(i%500 == 0) //(gradR === NaN)|(currentLoc.r === NaN)|(disturbedLoc.r === NaN)
-            {
-                console.error("CurrentError: "+currentError);
-                
-                console.log("gradR: "+gradR);
-                console.log("gradG: "+gradG);
-                console.log("gradB: "+gradB);
-                console.log("points: "+points);
-                
-                if(typeof currentLoc == 'undefined')
-                {
-                    console.error("currentLoc is undefined.");
 
-                }
-                else
-                {
-                    console.error("currentLoc:");
-                    console.error(currentLoc.r);
-                    console.error(currentLoc.g);
-                    console.error(currentLoc.b);
-                }
-                
-                if(typeof currentLocLab == 'undefined')
-                {
-                    console.error("currentLocLab is undefined.");
-
-                }
-                else
-                {
-                    console.error("currentLocLab:");
-                    console.error(currentLocLab.l);
-                    console.error(currentLocLab.a);
-                    console.error(currentLocLab.b);
-                }
-                
-                if(typeof disturbedLoc == 'undefined')
-                {
-                    console.error("disturbedLoc is undefined.");
-
-                }
-                else
-                {
-                    console.error("disturbedLoc:");
-                    console.error(disturbedLoc.r);
-                    console.error(disturbedLoc.g);
-                    console.error(disturbedLoc.b);
-                }
-                
-                if(typeof disturbedLocLab == 'undefined')
-                {
-                    console.error("disturbedLocLab is undefined.");
-
-                }
-                else
-                {
-                    console.error("disturbedLocLab:");
-                    console.error(disturbedLocLab.l);
-                    console.error(disturbedLocLab.a);
-                    console.error(disturbedLocLab.b);
-                }
-                
-                //console.error('Gradient r: '+gradR+' iteration: '+i+' currentLoc: '+currentLoc+' disturbedLoc: '+disturbedLoc+' currentError: '+currentError+' disterbedError: '+disturbedError);
-            }
-            
             //var gradAbs = Math.sqrt(gradR*gradR+gradG*gradG+gradB*gradB);
             
             //update location
