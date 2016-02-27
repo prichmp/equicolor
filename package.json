@@ -1,0 +1,11 @@
+     {
+         "name": "Equicolor",
+         "description":"A JS library for finding colors that look the most diffrent from each other.",
+         "version": "0.1.0",
+         "dependencies": {
+          },
+         "devDependencies": {
+             "mocha": "*",
+             "chai": "*"
+         }
+     }
