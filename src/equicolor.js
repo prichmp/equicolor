@@ -29,7 +29,7 @@ var equicolor = {
             
             return result;
         },
-
+        
         to256: function()
         {
             this.r = r*255;
@@ -320,14 +320,19 @@ var equicolor = {
         
         var costFunct = function(labPoints, currentPoint)
         {
-            var distance = 0;
+            //This is a kernal density estimator.
+            var sum = 0;
             for(var i=0; i<labPoints.length; i++)
             {
-                //I'm squaring the distance to make the gradients larger when near a point.
-                distance = distance + currentPoint.findDistance(labPoints[i]);
+                var distance = currentPoint.findDistance(labPoints[i]);
+                if(distance < 221.7)
+                {
+                    //This is a modified Epanechnikov kernel. 
+                    sum += (20)*(1-Math.pow(distance/221.7,2));
+                }
             }
             
-            return distance;
+            return sum/labPoints.length;
         }
         
         var newColors = [];
