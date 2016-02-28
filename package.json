@@ -1,11 +1,16 @@
      {
          "name": "Equicolor",
          "description":"A JS library for finding colors that look the most diffrent from each other.",
-         "version": "0.1.0",
+         "author": "Matthew Prichard <green.matt@comcast.net>",
+         "version": "1.0.0",
+         "license": "MIT",
          "dependencies": {
           },
          "devDependencies": {
-             "mocha": "*",
-             "chai": "*"
-         }
+             "mocha": "2.4.x",
+             "chai": "3.5.x"
+         },
+         "scripts": {
+            "test": "mocha"
+          }
      }

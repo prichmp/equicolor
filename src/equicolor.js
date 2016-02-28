@@ -328,7 +328,9 @@ var equicolor = {
                 if(distance < 221.7)
                 {
                     //This is a modified Epanechnikov kernel. 
-                    sum += (20)*(1-Math.pow(distance/221.7,2));
+                    var kernel = (20)*(1-Math.pow(distance/221.7,2));
+                    kernel = Math.max(kernel,0);
+                    sum += kernel;
                 }
             }
             
@@ -359,13 +361,11 @@ var equicolor = {
         
         var gradArr = [0,0,0];
         var loc = [0,0,0];
-        
-        var initialRbg = Object.create(equicolor.RGB);
-        initialRbg.r = Math.round(Math.random()*255);
-        initialRbg.g = Math.round(Math.random()*255);
-        initialRbg.b = Math.round(Math.random()*255); 
-        
-        var currentLoc = initialRbg;
+
+        var currentLoc = Object.create(equicolor.RGB);
+        currentLoc.r = Math.round(Math.random()*255);
+        currentLoc.g = Math.round(Math.random()*255);
+        currentLoc.b = Math.round(Math.random()*255); 
 
         //This function just checks to see if we have gone beyond 255 and out of bounds.
         var border = function(number)
@@ -401,7 +401,9 @@ var equicolor = {
             
         }
         
-        var iterations = 1000;
+        var lowestError = Number.POSITIVE_INFINITY;
+        var lowestLoc = currentLoc;
+        var iterations = 450;
         for(var i=0; i<iterations; i++)
         {
             //Get gradient
@@ -420,26 +422,117 @@ var equicolor = {
             var disturbedError = costFunct(points, disturbedLocLab);
             
             //Compute gradient 
-            var gradR = -1*gradient(currentError,disturbedError,currentLoc.r,disturbedLoc.r);
-            var gradG = -1*gradient(currentError,disturbedError,currentLoc.g,disturbedLoc.g);
-            var gradB = -1*gradient(currentError,disturbedError,currentLoc.b,disturbedLoc.b);
+            var gradR = gradient(currentError,disturbedError,currentLoc.r,disturbedLoc.r);
+            var gradG = gradient(currentError,disturbedError,currentLoc.g,disturbedLoc.g);
+            var gradB = gradient(currentError,disturbedError,currentLoc.b,disturbedLoc.b);
 
-            //var gradAbs = Math.sqrt(gradR*gradR+gradG*gradG+gradB*gradB);
+            var gradAbs = Math.sqrt(gradR*gradR+gradG*gradG+gradB*gradB);
             
             //update location
             //======================================================
             
-            //"learning" rate
-            var gamma = 10;
+            if(currentError < lowestError)
+            {
+                lowestError = currentError;
+                lowestLoc = currentLoc;
+            }
             
-            currentLoc.r = border(gamma*gradR+currentLoc.r);
-            currentLoc.g = border(gamma*gradG+currentLoc.g);
-            currentLoc.b = border(gamma*gradB+currentLoc.b);
+            //"learning" rate
+            var gamma = 100;
+            
+            if(i == iterations-1)
+            {
+                console.log("i = "+i);
+                console.log("Error = "+currentError);
+                console.log("Math.round(gradR*gamma) = "+Math.round(gradR*gamma));
+                console.log("Math.round(gradG*gamma) = "+Math.round(gradG*gamma));
+                console.log("Math.round(gradB*gamma) = "+Math.round(gradB*gamma));
+                console.log("Current Color:"+ equicolor.rgbToHex(currentLoc));
+            }
+            
+            currentLoc.r = border(gamma*-1*gradR+currentLoc.r);
+            currentLoc.g = border(gamma*-1*gradG+currentLoc.g);
+            currentLoc.b = border(gamma*-1*gradB+currentLoc.b);
             
         }
+        return lowestLoc;
         
-        return currentLoc;
+    },
+    
+    findNextColorsSlow: function(points, numberOfColors)
+    {
+        var labPoints = [];
+        for(var i=0; i<points.length; i++)
+        {
+            var point = points[i];
+            var labPoint = equicolor.convertToLab(point);
+            labPoints.push(labPoint);
+        }
         
+        var costFunct = function(labPoints, currentPoint)
+        {
+            //This is a kernal density estimator.
+            var sum = 0;
+            for(var i=0; i<labPoints.length; i++)
+            {
+                var distance = currentPoint.findDistance(labPoints[i]);
+                if(distance < 221.7)
+                {
+                    //This is a modified Epanechnikov kernel. 
+                    var kernel = (20)*(1-Math.pow(distance/221.7,2));
+                    kernel = Math.max(kernel,0);
+                    sum += kernel;
+                }
+            }
+            
+            return sum/labPoints.length;
+        }
+        
+        var newColors = [];
+        
+        for(var i=0; i<numberOfColors; i++)
+        {
+            var newColor = equicolor.absoluteMin(labPoints, costFunct);
+            newColors.push(newColor);
+            labPoints.push(equicolor.rgbToLab(newColor));
+        }
+        
+        var result = newColors.map(equicolor.rgbToHex);
+        
+        return result;
+    },
+    
+    absoluteMin: function(points, costFunct)
+    {
+        var lowestError = Number.POSITIVE_INFINITY;
+        var lowestLoc = currentLoc;
+        
+        for(var r=0; r<256; r+=16)
+        {
+            for(var g=0; g<256; g+=16)
+            {
+                for(var b=0; b<256; b+=16)
+                {
+                    var currentLoc = Object.create(equicolor.RGB);
+                    currentLoc.r = r;
+                    currentLoc.g = g;
+                    currentLoc.b = b;
+                    
+                    var currentLocLab = equicolor.rgbToLab(currentLoc)
+                    var currentError = costFunct(points, currentLocLab);
+                    
+                    if(currentError < lowestError)
+                    {
+                        lowestError = currentError;
+                        lowestLoc = currentLoc;
+                    } 
+                }
+            }
+        }
+        
+        console.log("lowest absolute min: "+lowestError);
+        
+        return lowestLoc;
     }
     
 };

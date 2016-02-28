@@ -170,12 +170,27 @@ describe('equicolor', function() {
         
         it('Should find colors maximally diffrent.', function() {
             
-            var colors = equicolor.findNextColors(["#ffffff","#000000"], 20);
+            var num = 1;
+            var colors = equicolor.findNextColors(["#ffffff","#000000"], num);
             
             console.log(colors);
             
-            expect(colors).to.have.length(20);
+            expect(colors).to.have.length(num);
             
+            
+        });
+        
+    });
+    
+    describe('#findNextColorsSlow()', function() {
+        
+        it('A check on the gradient decent.', function() {
+            
+            var colors = equicolor.findNextColorsSlow(["#ffffff","#000000"], 1);
+            
+            console.log(colors);
+            
+            expect(colors).to.have.length(1);
             
         });
         
