@@ -1,16 +1,30 @@
-     {
-         "name": "Equicolor",
-         "description":"A JS library for finding colors that look the most diffrent from each other.",
-         "author": "Matthew Prichard <green.matt@comcast.net>",
-         "version": "1.0.0",
-         "license": "MIT",
-         "dependencies": {
-          },
-         "devDependencies": {
-             "mocha": "2.4.x",
-             "chai": "3.5.x"
-         },
-         "scripts": {
-            "test": "mocha"
-          }
-     }
+{
+  "name": "Equicolor",
+  "description": "A JS library for finding colors that look the most diffrent from each other.",
+  "author": "Matthew Prichard <green.matt@comcast.net>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prichmp/equicolor.git"
+  },
+  "bugs": {
+    "url" : "https://github.com/prichmp/equicolor/issues"
+  },
+  "version": "1.1.0",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha --require ts-node/register ./dist/test",
+    "build": "tsc",
+    "buildamd": "tsc --module AMD"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-shell": "^0.5.2",
+    "mocha": "^3.2.0",
+    "ts-node": "^2.1.0",
+    "typescript": "^2.1.6",
+    "voronoi-diagram": "^1.0.1"
+  }
+}

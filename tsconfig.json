@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES5",
+        "outDir": "dist"
+  },
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+      "node_modules",
+      "**/*.spec.ts"
+  ],
+  "compileOnSave" : false
+
+}
